@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RegimeShift — Institutional Macro Intelligence</title>
 <meta name="description" content="Multi-horizon macro regime classification system for institutional and professional investors. Real-time regime detection, shock monitoring, and asset allocation guidance.">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta property="og:title" content="RegimeShift — Institutional Macro Intelligence">
+<meta property="og:description" content="Multi-horizon macro regime classification system. Real-time regime detection, shock monitoring, and asset allocation guidance.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
@@ -16,7 +24,10 @@
 
 <nav>
   <div class="container">
-    <a href="#" class="nav-brand">Regime<span>Shift</span></a>
+    <a href="#" class="nav-brand" style="display:flex;align-items:center;gap:.5rem;text-decoration:none">
+      <svg width="28" height="28" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10,46 L28,16 L46,46" stroke="#71717a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/><path d="M18,46 L36,16 L54,46" stroke="#c8a97e" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span style="font-family:var(--serif);font-size:1.25rem;letter-spacing:-.02em"><span style="color:var(--text-primary)">Regime</span><span style="color:var(--accent)">Shift</span></span>
+    </a>
     <div class="nav-links">
       <a href="#how-it-works">System</a>
       <a href="#features">Capabilities</a>
@@ -46,7 +57,7 @@
       <h1>Know the regime<br>before the <em>market</em> does.</h1>
       <p class="hero-sub">A multi-horizon macro classification system that identifies regime shifts, monitors stress events, and provides asset allocation guidance — the way institutional desks actually think.</p>
       <div class="hero-actions">
-        <a href="mailto:hello@getregimeshift.com" class="btn-primary">Request Access &rarr;</a>
+        <a href="#contact" class="btn-primary">Request Access &rarr;</a>
         <a href="#how-it-works" class="btn-secondary">Learn More</a>
       </div>
     </div>
@@ -247,7 +258,11 @@
         <div class="section-eyebrow">Get Started</div>
         <h2 class="section-title">Request access.</h2>
         <p class="section-desc">Currently available by invitation. Tell us about your use case and we'll follow up within 24 hours.</p>
-        <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+        <form class="contact-form" id="contactForm">
+          <input type="hidden" name="access_key" value="fc012657-1e89-4622-848a-22a4b20726e1">
+          <input type="hidden" name="subject" value="New RegimeShift Inquiry">
+          <input type="hidden" name="from_name" value="RegimeShift Website">
+          <input type="checkbox" name="botcheck" style="display:none">
           <div class="form-row">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" placeholder="Full name" required>
@@ -271,7 +286,8 @@
             <label for="message">Message</label>
             <textarea id="message" name="message" placeholder="Tell us about your use case, assets of interest, and any specific requirements."></textarea>
           </div>
-          <button type="submit" class="submit-btn">Submit Request &rarr;</button>
+          <button type="submit" class="submit-btn" id="submitBtn">Submit Request &rarr;</button>
+          <div id="formResult" style="margin-top:1rem;font-size:.875rem;text-align:center;display:none"></div>
         </form>
       </div>
       <div class="contact-info fade-in">
@@ -301,7 +317,48 @@
 
 <script>
 const observer=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&e.target.classList.add('visible')})},{threshold:.1});document.querySelectorAll('.fade-in').forEach(e=>observer.observe(e));
-function handleSubmit(e){e.preventDefault();const n=document.getElementById('name').value,m=document.getElementById('email').value,p=document.getElementById('profile').value,g=document.getElementById('message').value;window.location.href='mailto:hello@getregimeshift.com?subject='+encodeURIComponent('RegimeShift Access Request — '+n)+'&body='+encodeURIComponent('Name: '+n+'\nEmail: '+m+'\nProfile: '+p+'\n\nMessage:\n'+g);const b=e.target.querySelector('.submit-btn');b.textContent='Opening Mail Client...';b.style.background='#4ade80';setTimeout(()=>{b.textContent='Submit Request \u2192';b.style.background=''},3e3)}
+
+const form=document.getElementById('contactForm');
+const result=document.getElementById('formResult');
+const submitBtn=document.getElementById('submitBtn');
+
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  submitBtn.disabled=true;
+  submitBtn.textContent='Sending...';
+  result.style.display='none';
+
+  const formData=new FormData(form);
+  const object=Object.fromEntries(formData);
+  const json=JSON.stringify(object);
+
+  fetch('https://api.web3forms.com/submit',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:json
+  })
+  .then(async(response)=>{
+    const data=await response.json();
+    result.style.display='block';
+    if(response.status===200){
+      result.style.color='#4ade80';
+      result.textContent='Thank you. We\u2019ll be in touch within 24 hours.';
+      form.reset();
+    }else{
+      result.style.color='#fbbf24';
+      result.textContent=data.message||'Something went wrong. Please email hello@getregimeshift.com directly.';
+    }
+  })
+  .catch(()=>{
+    result.style.display='block';
+    result.style.color='#fbbf24';
+    result.textContent='Connection error. Please email hello@getregimeshift.com directly.';
+  })
+  .finally(()=>{
+    submitBtn.disabled=false;
+    submitBtn.textContent='Submit Request \u2192';
+  });
+});
 </script>
 </body>
 </html>
